@@ -1,0 +1,38 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments and local UV state
+.venv/
+.uv-cache/
+.uv-python/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Generated data and visualizations
+data/
+*.npz
+*.mp4
+*.gif
+*.avi
+*.mov
+
+# Local/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*
