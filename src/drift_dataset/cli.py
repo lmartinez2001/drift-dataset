@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from drift_dataset.config import DatasetConfig
+from drift_dataset.config import DatasetConfig, FLUX_2_KLEIN_DEFAULT_RESOLUTION
 from drift_dataset.dataset import generate_dataset
 
 
@@ -13,8 +13,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--frames", type=_positive_int, help="frames per sample")
     parser.add_argument("--samples", type=_positive_int, help="number of samples")
-    parser.add_argument("--width", type=_positive_int, default=128)
-    parser.add_argument("--height", type=_positive_int, default=128)
+    parser.add_argument("--width", type=_positive_int, default=FLUX_2_KLEIN_DEFAULT_RESOLUTION)
+    parser.add_argument("--height", type=_positive_int, default=FLUX_2_KLEIN_DEFAULT_RESOLUTION)
     parser.add_argument("--radius-min", type=float, default=6.0)
     parser.add_argument("--radius-max", type=float, default=16.0)
     parser.add_argument("--seed", type=int, default=None)

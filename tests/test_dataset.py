@@ -8,9 +8,17 @@ from pathlib import Path
 import numpy as np
 
 from drift_dataset import DatasetConfig, generate_dataset
+from drift_dataset.config import FLUX_2_KLEIN_DEFAULT_RESOLUTION
 
 
 class DatasetGenerationTest(unittest.TestCase):
+    def test_default_resolution_matches_flux_2_klein_4b(self) -> None:
+        config = DatasetConfig(sample_count=1, frame_count=1, show_progress=False)
+
+        self.assertEqual(config.width, FLUX_2_KLEIN_DEFAULT_RESOLUTION)
+        self.assertEqual(config.height, FLUX_2_KLEIN_DEFAULT_RESOLUTION)
+        self.assertEqual(FLUX_2_KLEIN_DEFAULT_RESOLUTION, 1024)
+
     def test_generate_dataset_writes_one_hashed_file_per_sample(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_dir = Path(temp_dir)

@@ -9,7 +9,9 @@ import numpy as np
 from drift_dataset.visualization import (
     find_valid_sample_files,
     is_valid_sample_file,
+    optical_flow_to_video_frames,
     sample_to_video_frames,
+    write_optical_flow_video,
     write_sample_video,
 )
 
@@ -32,6 +34,29 @@ class VisualizationTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "sample.gif"
             write_sample_video(sample, output_path, fps=3)
+
+            self.assertTrue(output_path.exists())
+            self.assertGreater(output_path.stat().st_size, 0)
+
+    def test_optical_flow_to_video_frames_encodes_direction_and_magnitude(self) -> None:
+        flow = np.zeros((3, 2, 2, 2), dtype=np.float32)
+        flow[1, 0, 0] = [1.0, 0.0]
+        flow[1, 0, 1] = [0.0, 0.5]
+
+        video = optical_flow_to_video_frames(flow, scale=2)
+
+        self.assertEqual(video.shape, (2, 4, 6, 3))
+        self.assertEqual(video.dtype, np.uint8)
+        self.assertGreater(int(video[0, 0, 2, 0]), 200)
+        self.assertEqual(int(video[0, 0, 0].max()), 0)
+
+    def test_write_optical_flow_video_creates_file(self) -> None:
+        flow = np.zeros((8, 8, 3, 2), dtype=np.float32)
+        flow[2:5, 2:5, :, 0] = 1.0
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "flow.gif"
+            write_optical_flow_video(flow, output_path, fps=3)
 
             self.assertTrue(output_path.exists())
             self.assertGreater(output_path.stat().st_size, 0)

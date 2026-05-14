@@ -4,12 +4,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+FLUX_2_KLEIN_DEFAULT_RESOLUTION = 1024
+
+
 @dataclass(frozen=True)
 class DatasetConfig:
     sample_count: int
     frame_count: int
-    width: int = 128
-    height: int = 128
+    width: int = FLUX_2_KLEIN_DEFAULT_RESOLUTION
+    height: int = FLUX_2_KLEIN_DEFAULT_RESOLUTION
     radius_min: float = 6.0
     radius_max: float = 16.0
     seed: int | None = None
