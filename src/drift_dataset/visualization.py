@@ -99,9 +99,7 @@ def optical_flow_to_video_frames(optical_flow: FloatArray, scale: int = 1) -> np
     if max_magnitude > 0.0:
         value = (magnitude / max_magnitude).astype(np.float32)
 
-    hue = (np.arctan2(dy, dx) % (2.0 * np.pi)) / (2.0 * np.pi)
-    saturation = np.where(magnitude > 0.0, 1.0, 0.0).astype(np.float32)
-    video = _hsv_to_rgb_uint8(hue.astype(np.float32), saturation, value)
+    video = np.repeat((value * 255.0).astype(np.uint8)[:, :, :, None], 3, axis=3)
 
     if scale > 1:
         video = np.repeat(np.repeat(video, scale, axis=1), scale, axis=2)
@@ -153,33 +151,3 @@ def _normalize_to_uint8(frames: FloatArray) -> np.ndarray:
 
     normalized = (frames - min_value) / (max_value - min_value)
     return np.clip(normalized * 255.0, 0.0, 255.0).astype(np.uint8)
-
-
-def _hsv_to_rgb_uint8(hue: FloatArray, saturation: FloatArray, value: FloatArray) -> np.ndarray:
-    hue6 = hue * 6.0
-    chroma = value * saturation
-    x = chroma * (1.0 - np.abs((hue6 % 2.0) - 1.0))
-    match = value - chroma
-
-    zeros = np.zeros_like(hue, dtype=np.float32)
-    red = np.empty_like(hue, dtype=np.float32)
-    green = np.empty_like(hue, dtype=np.float32)
-    blue = np.empty_like(hue, dtype=np.float32)
-
-    region = np.floor(hue6).astype(np.int32) % 6
-    choices = [
-        (chroma, x, zeros),
-        (x, chroma, zeros),
-        (zeros, chroma, x),
-        (zeros, x, chroma),
-        (x, zeros, chroma),
-        (chroma, zeros, x),
-    ]
-    for idx, (r_value, g_value, b_value) in enumerate(choices):
-        mask = region == idx
-        red[mask] = r_value[mask]
-        green[mask] = g_value[mask]
-        blue[mask] = b_value[mask]
-
-    rgb = np.stack([red + match, green + match, blue + match], axis=-1)
-    return np.clip(rgb * 255.0, 0.0, 255.0).astype(np.uint8)

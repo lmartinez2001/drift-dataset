@@ -65,7 +65,7 @@ Render every valid optical-flow sequence in a directory:
 uv run drift-visualize-flow data/samples --output data/flow_videos
 ```
 
-Optical-flow videos encode direction as hue and magnitude as brightness.
+Optical-flow videos show vector magnitude only: brighter pixels mean stronger motion.
 Directory visualization shows a progress bar. Use `--fps` and `--scale` to adjust playback:
 
 ```bash

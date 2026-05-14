@@ -9,6 +9,7 @@ import numpy as np
 
 from drift_dataset import DatasetConfig, generate_dataset
 from drift_dataset.config import FLUX_2_KLEIN_DEFAULT_RESOLUTION
+from drift_dataset.flow import compute_optical_flow
 
 
 class DatasetGenerationTest(unittest.TestCase):
@@ -56,6 +57,21 @@ class DatasetGenerationTest(unittest.TestCase):
             self.assertIn("path_name", metadata)
             self.assertIn("path_params", metadata)
             self.assertIn("radius", metadata)
+
+    def test_optical_flow_uses_current_frame_support_only(self) -> None:
+        coords = np.array([[1.0, 1.0], [3.0, 1.0]], dtype=np.float32)
+        masks = np.zeros((2, 3, 5), dtype=bool)
+        masks[0, 1, 1] = True
+        masks[1, 1, 3] = True
+
+        flow = compute_optical_flow(coords, masks)
+        nonzero_support = np.linalg.norm(flow[:, :, 0], axis=-1) > 0.0
+
+        expected_support = np.zeros((5, 3), dtype=bool)
+        expected_support[1, 1] = True
+        self.assertTrue(np.array_equal(nonzero_support, expected_support))
+        self.assertEqual(float(flow[1, 1, 0, 0]), 2.0)
+        self.assertEqual(float(flow[1, 1, 0, 1]), 0.0)
 
 
 if __name__ == "__main__":

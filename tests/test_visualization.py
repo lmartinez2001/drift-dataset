@@ -38,7 +38,7 @@ class VisualizationTest(unittest.TestCase):
             self.assertTrue(output_path.exists())
             self.assertGreater(output_path.stat().st_size, 0)
 
-    def test_optical_flow_to_video_frames_encodes_direction_and_magnitude(self) -> None:
+    def test_optical_flow_to_video_frames_encodes_magnitude_only(self) -> None:
         flow = np.zeros((3, 2, 2, 2), dtype=np.float32)
         flow[1, 0, 0] = [1.0, 0.0]
         flow[1, 0, 1] = [0.0, 0.5]
@@ -47,7 +47,10 @@ class VisualizationTest(unittest.TestCase):
 
         self.assertEqual(video.shape, (2, 4, 6, 3))
         self.assertEqual(video.dtype, np.uint8)
-        self.assertGreater(int(video[0, 0, 2, 0]), 200)
+        self.assertEqual(int(video[0, 0, 2, 0]), 255)
+        self.assertEqual(int(video[0, 0, 2, 1]), 255)
+        self.assertEqual(int(video[1, 0, 2, 0]), 127)
+        self.assertEqual(int(video[1, 0, 2, 1]), 127)
         self.assertEqual(int(video[0, 0, 0].max()), 0)
 
     def test_write_optical_flow_video_creates_file(self) -> None:
